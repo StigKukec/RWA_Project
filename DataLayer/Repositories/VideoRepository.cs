@@ -123,37 +123,49 @@ namespace DataLayer.Repositories
 
             return bLVideo;
         }
-        public void AddGenresToVideo(int videoId, int genreId)
+        public void AddGenresToVideo(int videoId, int[] genreIds)
         {
-            DeleteGenresInVideo(videoId);
-            var dalVideoGenre = new VideoGenre
+            List<VideoGenre> videoGenres = new();
+
+            for (int i = 0; i < genreIds.Length; i++)
             {
-                GenreId = genreId,
-                VideoId = videoId
-            };
-            _dbContext.VideoGenres.Add(dalVideoGenre);
+                var videoGenre = new VideoGenre
+                {
+                    GenreId = genreIds[i],
+                    VideoId = videoId
+                };
+                videoGenres.Add(videoGenre);
+            }
+
+            _dbContext.VideoGenres.AddRange(videoGenres);
             _dbContext.SaveChanges();
 
         }
-        public void AddTagsToVideo(int videoId, int tagId)
+        public void AddTagsToVideo(int videoId, int[] tagIds)
         {
-            DeleteTagsInVideo(videoId);
-            var dalVideoTag = new VideoTag
+            List<VideoTag> videoTags= new();
+
+            for (int i = 0; i < tagIds.Length; i++)
             {
-                TagId = tagId,
-                VideoId = videoId
-            };
-            _dbContext.VideoTags.Add(dalVideoTag);
+                var videoTag = new VideoTag
+                {
+                    TagId = tagIds[i],
+                    VideoId = videoId
+                };
+                videoTags.Add(videoTag);
+            }
+            
+            _dbContext.VideoTags.AddRange(videoTags);
             _dbContext.SaveChanges();
 
         }
-        private void DeleteGenresInVideo(int videoId)
+        public void DeleteGenresInVideo(int videoId)
         {
             var genres = _dbContext.VideoGenres.Where(x => x.VideoId.Equals(videoId));
             _dbContext.VideoGenres.RemoveRange(genres);
             _dbContext.SaveChanges();
         }
-        private void DeleteTagsInVideo(int videoId)
+        public void DeleteTagsInVideo(int videoId)
         {
             var tags = _dbContext.VideoTags.Where(x => x.VideoId.Equals(videoId));
             _dbContext.VideoTags.RemoveRange(tags);
@@ -218,6 +230,8 @@ namespace DataLayer.Repositories
             {
                 Idgenre = genreId
             };
+            var genres = _dbContext.VideoGenres.Where(x => x.GenreId.Equals(genreId));
+            _dbContext.VideoGenres.RemoveRange(genres);
             _dbContext.Genres.Remove(genre);
             _dbContext.SaveChanges();
 
@@ -266,6 +280,8 @@ namespace DataLayer.Repositories
             {
                 Idtag = tagId
             };
+            var tags = _dbContext.VideoTags.Where(x => x.TagId.Equals(tagId));
+            _dbContext.VideoTags.RemoveRange(tags);
             _dbContext.Tags.Remove(tag);
             _dbContext.SaveChanges();
         }

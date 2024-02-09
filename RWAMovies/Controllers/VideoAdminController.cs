@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DataLayer.DALModels;
 using DataLayer.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -131,20 +132,17 @@ namespace RWAMovies.Controllers
 
                 if (!genres.IsNullOrEmpty())
                 {
+                    _videoRepo.DeleteGenresInVideo(currentVideo.Idvideo);
                     string[] detailedGenres = genres!.Split(',');
-                    // video.VideoGenres.ToList().ForEach(v => v.VideoId = currentVideo!.Idvideo);
-                    for (int i = 0; i < detailedGenres.Length; i++)
-                    {
-                        _videoRepo.AddGenresToVideo(currentVideo.Idvideo, int.Parse(detailedGenres[i]));
-                    }
+                    int[] genreIds = Array.ConvertAll(detailedGenres, genreId => int.Parse(genreId));
+                    _videoRepo.AddGenresToVideo(currentVideo.Idvideo, genreIds);
                 }
                 if (!tags.IsNullOrEmpty())
                 {
+                    _videoRepo.DeleteTagsInVideo(currentVideo.Idvideo);
                     string[] detailedTags = tags!.Split(',');
-                    for (int i = 0; i < detailedTags.Length; i++)
-                    {
-                        _videoRepo.AddTagsToVideo(currentVideo.Idvideo, int.Parse(detailedTags[i]));
-                    }
+                    int[] tagIds = Array.ConvertAll(detailedTags, tagId => int.Parse(tagId));
+                    _videoRepo.AddTagsToVideo(currentVideo.Idvideo, tagIds);
                 }
 
                 return RedirectToAction(nameof(Index));
@@ -186,19 +184,17 @@ namespace RWAMovies.Controllers
 
                 if (!genres.IsNullOrEmpty())
                 {
+                    _videoRepo.DeleteGenresInVideo(id);
                     string[] detailedGenres = genres!.Split(',');
-                    for (int i = 0; i < detailedGenres.Length; i++)
-                    {
-                        _videoRepo.AddGenresToVideo(currentVideo.Idvideo, int.Parse(detailedGenres[i]));
-                    }
+                    int[] genreIds = Array.ConvertAll(detailedGenres, genreId => int.Parse(genreId));
+                    _videoRepo.AddGenresToVideo(currentVideo.Idvideo, genreIds);
                 }
                 if (!tags.IsNullOrEmpty())
                 {
+                    _videoRepo.DeleteTagsInVideo(id);
                     string[] detailedTags = tags!.Split(',');
-                    for (int i = 0; i < detailedTags.Length; i++)
-                    {
-                        _videoRepo.AddTagsToVideo(currentVideo.Idvideo, int.Parse(detailedTags[i]));
-                    }
+                    int[] tagIds = Array.ConvertAll(detailedTags, tagId => int.Parse(tagId));
+                    _videoRepo.AddTagsToVideo(currentVideo.Idvideo, tagIds);
                 }
 
                 return RedirectToAction(nameof(Index));

@@ -6,13 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using RWAMovies.ViewModels;
 using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Web;
-using Microsoft.AspNetCore.Http;
-using DataLayer.BLModels;
 
 namespace RWAMovies.Controllers
 {
@@ -140,13 +136,18 @@ namespace RWAMovies.Controllers
         {
             try
             {
+
                 var blRegisteredUser = _repositoryFactory.UserRepository.Value.RegisterUser(register.FirstName, register.LastName, register.Username, register.Email, register.Password, register.Country.Idcountry);
                 var vmRegisteredUser = _mapper.Map<VMUser>(blRegisteredUser);
                 var encodedSecurityToken = HttpUtility.UrlEncode(vmRegisteredUser.SecurityToken);
                 return RedirectToAction("ValidateEmail", new { email = vmRegisteredUser.Email, securityToken = encodedSecurityToken });
+
+                //ViewBag.UserExists = true;
+                //return View();
             }
             catch
             {
+                ViewBag.FailedRegistration = true;
                 return View();
             }
         }
