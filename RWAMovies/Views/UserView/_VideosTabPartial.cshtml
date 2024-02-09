@@ -1,0 +1,15 @@
+﻿@model IEnumerable<RWAMovies.ViewModels.VMVideo>
+
+@foreach (var item in Model)
+{
+    <div class="card col-5 services-card">
+        <div class="card-body">
+            <h3 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h3>
+            <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
+            <div class="services-img-window text-center">
+                <img class="card-img-top img-thumbnail img-fluid w-50 w-50" src="@item.UrlImage">
+            </div>
+            @Html.ActionLink("Preview", "VideoPreview", new {  id = item.IDVideo  }, new { @class = "btn btn-secondary card-img-bottom" })
+        </div>
+    </div>
+}

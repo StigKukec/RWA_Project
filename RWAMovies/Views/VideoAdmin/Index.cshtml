@@ -1,0 +1,426 @@
+﻿@model IEnumerable<RWAMovies.ViewModels.VMVideo>
+
+@{
+    ViewData["Title"] = "Index";
+    var page = (int)ViewBag.Page;
+    var size = (int)ViewBag.Size;
+    var orderBy = (string)ViewBag.OrderBy;
+    var direction = (string)ViewBag.Direction;
+    var pages = (int)ViewBag.Pages;
+    IEnumerable<VMGenre> genres = (IEnumerable<VMGenre>)ViewBag.Genres;
+}
+
+<h1>Index</h1>
+<p>
+    <form class="d-flex">
+        <button asp-action="Create" class="btn btn-outline-primary" type="submit">Create New</button>
+    </form>
+</p>
+
+<div id="pager" class="btn-group">
+    @for (var i = 0; i <= pages; i++)
+    {
+        var currClass = page == i ? "btn-primary" : "btn-outline-primary";
+        <a asp-action="Index"
+           asp-route-page="@i"
+           asp-route-size="@size"
+           asp-route-orderBy="@orderBy"
+           asp-route-direction="@direction"
+           data-page="@i"
+           class="pager-btn btn @currClass">@(i + 1)</a>
+    }
+</div>
+
+<partial name="_FilterPartial"></>
+    <!--
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="showAllVideos navbar-brand" href="#">Show all videos</a>
+        <a class="showPagedVideos navbar-brand" href="#">Show paged videos</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="addedFilters navbar-nav me-auto mb-2 mb-lg-0">
+                
+                <li class="nav-item">
+                    <a class="showPagedVideos nav-link active" aria-current="page" href="#">Show paged videos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        By name
+                    </a>
+                    <ul class="name dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#">descending</a></li>
+                        <li><a class="dropdown-item" href="#">ascending</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        By genre
+                    </a>
+                    <ul class="genre dropdown-menu" aria-labelledby="navbarDropdown">
+
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a id="removeAllFilters" class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Remove all filters</a>
+                </li>
+            </ul>
+            <form class="d-flex">
+                <input class="form-control me-2" type="search" id="autocomplete-input" placeholder="Search for video..." aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</nav>
+    -->
+<table class="table" id="tableVideo">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IDVideo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UrlImage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StreamingUrl)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="video-table-body">
+            <partial name="_VideosTableBodyPartial" />
+    </tbody>
+</table>
+
+@section Scripts {
+  
+    <script>
+        var token = localStorage.getItem("jwt");
+        const name = "name";
+        const genre = "genre";
+        const idVideo = "idVideo";
+
+        const fetchVideosPartial = "/VideoAdmin/VideosTableBodyPartial";
+        const fetchSearchedVideosPartial = "/VideoAdmin/SearchVideosTabPartial";
+        const fetchSingleVideoPartial = "/VideoAdmin/VideoTableBodyPartial";
+        const fetchAllVideosPartial = "/VideoAdmin/AllVideosTableBodyPartial";
+        const videosJson = "/UserView/VideoJson";
+
+        const htmlVideoDisplayId = "#video-table-body";
+        const allVideosFilterName = ".showAllItems";
+        const pagedVideosFilterName = ".showPagedItems";
+        const nameFilter = ".name.dropdown-menu";
+        const nameFilterItem = ".name.dropdown-menu a.dropdown-item";
+        const genreFilter = ".genre.dropdown-menu";
+        const genreFilterItem = ".genre.dropdown-menu a.dropdown-item";
+
+
+        paging(@size, fetchVideosPartial, htmlVideoDisplayId);
+        autocomplete(videosJson, fetchSingleVideoPartial, htmlVideoDisplayId, name, idVideo);
+        autocompleteDisplay("Search for video...");
+        searchFilter(@size, fetchSearchedVideosPartial, htmlVideoDisplayId);
+
+        showAllItemsFilter(allVideosFilterName, fetchAllVideosPartial, htmlVideoDisplayId);
+        showPagedItems(@size, pagedVideosFilterName, fetchVideosPartial, htmlVideoDisplayId);
+        defaultFilterItemsName("videos");
+        
+        //************* <add filters arbitrarily> *********************************
+
+        addFilter(genre);
+        addFilter(name);
+
+        fillFilterItemsDefault(nameFilter);
+
+        @foreach (var genre in genres)
+        {
+            @:fillFilterItems(genreFilter, "@genre.Name");
+        }
+
+        //************* <filter functionality> *********************************
+        itemFilter(@size, genre, genreFilterItem, fetchVideosPartial, htmlVideoDisplayId);
+        itemFilter(@size, name, nameFilterItem, fetchVideosPartial, htmlVideoDisplayId);
+        removeAllFilters(@size, fetchVideosPartial, htmlVideoDisplayId);
+
+        //************* <filter animations> *********************************
+        // Use the show.bs.dropdown and hide.bs.dropdown events to trigger the animation
+        $('.dropdown').on('show.bs.dropdown', function (e) {
+            // Use the animate__animated and animate__fadeIn classes from animate.css
+            $('.dropdown-menu').addClass('animate__animated animate__fadeIn');
+        });
+        $('.dropdown').on('hide.bs.dropdown', function (e) {
+            // Use the animate__animated and animate__fadeOut classes from animate.css
+            $('.dropdown-menu').addClass('animate__animated animate__fadeOut');
+            // Remove the animation classes after the animation is done
+            setTimeout(function () {
+                $('.dropdown-menu').removeClass('animate__animated animate__fadeIn animate__fadeOut');
+            }, 500);
+        });
+        
+        /*
+        $(".pager-btn").click(function (event) {
+            console.log("Pager button clicked");
+            event.preventDefault();
+
+            var orderBy = localStorage.getItem("orderBy");
+            var direction = localStorage.getItem("direction");
+            page = $(this).data("page");
+
+            var ajaxData = {
+                page: page,
+                size: @size,
+                orderBy: orderBy,
+                direction: direction
+            };
+            $.ajax({
+                type: "GET",
+                url: "/VideoAdmin/VideosTableBodyPartial",
+                data: ajaxData,
+                Headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                success: function (data) {
+                    $("#video-table-body").html(data);
+
+                    $(".pager-btn").removeClass("btn-primary");
+                    $(".pager-btn").addClass("btn-outline-primary");
+
+                    $(".pager-btn[data-page=" + page + "]").removeClass("btn-outline-primary");
+                    $(".pager-btn[data-page=" + page + "]").addClass("btn-primary");
+                },
+                error: function (data) {
+                    console.error("Ajax GET error", data);
+                }
+            });
+        });
+
+        
+        
+        let videos = [];
+        let videoNames = [];
+        $.ajax({
+            type: 'GET',
+            url: "/UserView/VideoJson",
+            
+            Headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            
+            success: function (data) {
+
+                videos = data;
+                videoNames = videos.map(video => video.name);
+                console.log("Data recieved.");
+
+                $("#autocomplete-input").autocomplete({
+                    source: videoNames,
+                    select: function (event, ui) {
+
+                        let selectedVideo = videos.find(video => video.name === ui.item.value);
+                        let ajaxData = { idVideo: selectedVideo.idVideo };
+
+                        $.ajax({
+                            type: 'GET',
+                            url: "/VideoAdmin/VideoTableBodyPartial",
+                            data: ajaxData,
+                            success: function (data) {
+                                $("#video-table-body").html(data);
+                            },
+                            error: function (data) {
+                                console.error("Could not fetch video data.");
+                                //window.location.href = "/UserView/LogIn";
+                            }
+                        });
+                    }
+                });
+            },
+            error: function (data) {
+                console.error("Could not fetch video data.");
+                //window.location.href = "/UserView/LogIn";
+            }
+        });
+
+        
+        
+        $(".showAllVideos").click(function(){
+            $("#pager").hide();
+           
+            $.ajax({
+                type: "GET",
+                url: "/VideoAdmin/AllVideosTableBodyPartial",
+                
+                Headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                
+                success: function (data) {
+                    $("#video-table-body").html(data);
+                    $("#removeAllFilters").removeClass("disabled");
+                },
+                error: function (data) {
+                    console.error("Ajax GET error", data);
+                }
+            });
+        });
+        
+        $(".showPagedVideos").click(function(){
+            $("#pager").show();
+            var orderBy = localStorage.getItem("orderBy");
+            var direction = localStorage.getItem("direction");
+            var ajaxData = {
+                page: 0,
+                size: @size,
+                orderBy: orderBy,
+                direction: direction
+            };
+            $.ajax({
+                type: "GET",
+                url: "/VideoAdmin/VideosTableBodyPartial",
+                data: ajaxData,
+                
+                Headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                
+                success: function (data) {
+                    $("#video-table-body").html(data);
+                    $(".pager-btn").removeClass("btn-primary");
+                    $(".pager-btn").addClass("btn-outline-primary");
+
+                    $(".pager-btn[data-page=" + 0 + "]").removeClass("btn-outline-primary");
+                    $(".pager-btn[data-page=" + 0 + "]").addClass("btn-primary");
+                    $("#removeAllFilters").removeClass("disabled");
+                },
+                error: function (data) {
+                    console.error("Ajax GET error", data);
+                }
+            });
+        });
+
+     
+
+        $(".name.dropdown-menu a.dropdown-item").click(function (event) {
+            var ajaxData = {
+                page: 0,
+                size: @size,
+                orderBy: name,
+                direction: this.text
+            };
+            localStorage.setItem("orderBy", name);
+            localStorage.setItem("direction", this.text);
+                $("#pager").show();
+                $.ajax({
+                    type: "GET",
+                    url: "/VideoAdmin/VideosTableBodyPartial",
+                    data: ajaxData,
+                    
+                    Headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    
+                    success: function (data) {
+                        $("#video-table-body").html(data);
+                        $(".pager-btn").removeClass("btn-primary");
+                        $(".pager-btn").addClass("btn-outline-primary");
+
+                        $(".pager-btn[data-page=" + 0 + "]").removeClass("btn-outline-primary");
+                        $(".pager-btn[data-page=" + 0 + "]").addClass("btn-primary");
+                        $("#removeAllFilters").removeClass("disabled");
+                    },
+                    error: function (data) {
+                        console.error("Ajax GET error", data);
+                    }
+                });
+        });
+
+        
+        $(".genre dropdown-item").click(function () {
+            var ajaxData = {
+                page: 0,
+                size: @size,
+                orderBy: genre,
+                direction: this.text
+            };
+            localStorage.setItem("orderBy", genre);
+            localStorage.setItem("direction", this.text);
+                $("#pager").show();
+                $.ajax({
+                    type: "GET",
+                url: "/VideoAdmin/VideosTableBodyPartial",
+                    data: ajaxData,
+                    
+                    Headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    
+                    success: function (data) {
+                        $("#video-table-body").html(data);
+                        $(".pager-btn").removeClass("btn-primary");
+                        $(".pager-btn").addClass("btn-outline-primary");
+
+                        $(".pager-btn[data-page=" + 0 + "]").removeClass("btn-outline-primary");
+                        $(".pager-btn[data-page=" + 0 + "]").addClass("btn-primary");
+                        $("#removeAllFilters").removeClass("disabled");
+                    },
+                    error: function (data) {
+                        console.error("Ajax GET error", data);
+                    }
+                });
+        });
+
+
+        $('#removeAllFilters').click(function () {
+            var ajaxData = {
+                page: 0,
+                size: @size,
+                orderBy: "@orderBy",
+                direction: "@direction"
+            };
+            localStorage.removeItem("orderBy");
+            localStorage.removeItem("direction");
+            $("#pager").show();
+            $.ajax({
+                type: "GET",
+                url: "/VideoAdmin/VideosTableBodyPartial",
+                data: ajaxData,
+                
+                Headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                
+                success: function (data) {
+                    $("#video-table-body").html(data);
+                    $(".pager-btn").removeClass("btn-primary");
+                    $(".pager-btn").addClass("btn-outline-primary");
+
+                    $(".pager-btn[data-page=" + 0 + "]").removeClass("btn-outline-primary");
+                    $(".pager-btn[data-page=" + 0 + "]").addClass("btn-primary");
+                    $("#removeAllFilters").addClass("disabled");
+                },
+                error: function (data) {
+                    console.error("Ajax GET error", data);
+                }
+            });
+        });
+       */
+    </script>
+    }

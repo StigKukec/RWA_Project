@@ -1,0 +1,31 @@
+﻿@model IEnumerable<RWAMovies.ViewModels.VMVideo>
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.IDVideo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td class="img-thumbnail text-center w-25">
+            <img class="img-thumbnail w-75 h-50 btn" src="@item.UrlImage">
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TotalTime)
+        </td>
+        <td>
+            <iframe class="card-body d-flex flex-column align-items-center justify-content-center text-center" style="height: 400px; background-color: black" src="@item.StreamingUrl" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            @*@Html.DisplayFor(modelItem => item.StreamingUrl)*@
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new {  id=item.IDVideo  }, new { @class = "btn btn-outline-warning" }) |
+            @Html.ActionLink("Details", "Details", new {  id=item.IDVideo }, new { @class = "btn btn-outline-secondary" }) |
+            @Html.ActionLink("Delete", "Delete", new {  id=item.IDVideo }, new { @class = "btn btn-outline-danger" })
+        </td>
+    </tr>
+}

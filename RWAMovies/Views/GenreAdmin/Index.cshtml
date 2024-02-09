@@ -1,0 +1,95 @@
+﻿@model IEnumerable<RWAMovies.ViewModels.VMGenre>
+
+@{
+    ViewData["Title"] = "Index";
+    int page = ViewBag.Page;
+    int size = ViewBag.Size;
+    string orderBy = "";
+    string direction = "";
+    int pages = ViewBag.Pages;
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
+</p>
+<div id="pager" class="btn-group">
+    @for (var i = 0; i <= pages; i++)
+    {
+        var currClass = page == i ? "btn-primary" : "btn-outline-primary";
+        <a asp-action="Index"
+       asp-route-page="@i"
+       asp-route-size="@size"
+       asp-route-orderBy="@orderBy"
+       asp-route-direction="@direction"
+           data-page="@i"
+           class="pager-btn btn @currClass">@(i + 1)</a>
+    }
+</div>
+
+<partial name="_FilterPartial"></>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Idgenre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="genre-table-body">
+            <partial name="_GenresTableBodyPartial"></partial>
+    </tbody>
+</table>
+
+@section Scripts {
+   
+    <script>
+        const fetchItemsPartial = "/GenreAdmin/GenresTableBodyPartial";
+        const fetchAllItemsPartial = "/GenreAdmin/AllGenresTableBodyPartial";
+
+        const htmlUsersDisplayId = "#genre-table-body";
+        const allUsersFilterName = ".showAllItems";
+        const pagedUsersFilterName = ".showPagedItems";
+
+
+        paging(@size, fetchItemsPartial, htmlUsersDisplayId);
+        removeItem("autocomplete-input");
+        removeItem("btnSearch");
+
+        showAllItemsFilter(allUsersFilterName, fetchAllItemsPartial, htmlUsersDisplayId);
+        showPagedItems(@size, pagedUsersFilterName, fetchItemsPartial, htmlUsersDisplayId);
+        defaultFilterItemsName("genres");
+
+        //************* <add filters arbitrarily> *********************************
+
+
+        //************* <filter functionality> *********************************
+
+
+        removeAllFilters(@size, fetchItemsPartial, htmlUsersDisplayId);
+
+        //************* <filter animations> *********************************
+        // Use the show.bs.dropdown and hide.bs.dropdown events to trigger the animation
+        $('.dropdown').on('show.bs.dropdown', function (e) {
+            // Use the animate__animated and animate__fadeIn classes from animate.css
+            $('.dropdown-menu').addClass('animate__animated animate__fadeIn');
+        });
+        $('.dropdown').on('hide.bs.dropdown', function (e) {
+            // Use the animate__animated and animate__fadeOut classes from animate.css
+            $('.dropdown-menu').addClass('animate__animated animate__fadeOut');
+            // Remove the animation classes after the animation is done
+            setTimeout(function () {
+                $('.dropdown-menu').removeClass('animate__animated animate__fadeIn animate__fadeOut');
+            }, 500);
+        });
+    </script>
+    }

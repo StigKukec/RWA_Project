@@ -1,0 +1,78 @@
+﻿@model RWAMovies.ViewModels.VMVideoCreate
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+<h4>Video</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form id="Create" asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UrlImage" class="control-label"></label>
+                <input asp-for="UrlImage" class="form-control" />
+                <span asp-validation-for="UrlImage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TotalTime" class="control-label"></label>
+                <input asp-for="TotalTime" class="form-control" />
+                <span asp-validation-for="TotalTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StreamingUrl" class="control-label"></label>
+                <input asp-for="StreamingUrl" class="form-control" />
+                <span asp-validation-for="StreamingUrl" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                @Html.DropDownList("Genre", (SelectList)ViewBag.Genres,"Choose the genre", new { @class = "genres",id = "loadedGenre"})
+                <br />
+                <div id="SelectedGenres"></div>
+                <button type="button" id="deleteAllGenres">Delete all</button>
+            </div>
+            <br />
+            
+            <div class="form-group">
+                @Html.DropDownList("Tag", (SelectList)ViewBag.Tags,"Choose the tag", new { @class = "tags",id = "loadedTags"})
+                <br />
+                <div id="SelectedTags"></div>
+            <button type="button" id="deleteAllTags" >Delete all</button>
+                <input type="hidden" id="hiddenGenres" name="hiddenGenres" />
+                <input type="hidden" id="hiddenTags" name="hiddenTags" />
+            </div>
+            <br />
+            <div class="form-group">
+                <input id="createVideo" type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script src="~/js/SelectItems.js"></script>
+    <script>
+        var genreDisplayId = document.getElementById('SelectedGenres');
+        var tagDisplayId = document.getElementById('SelectedTags');
+
+        saveSelectedGenres(genreDisplayId);
+        saveSelectedTags(tagDisplayId);
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

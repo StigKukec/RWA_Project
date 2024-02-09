@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <title>Notification Page</title>
+</head>
+<body>
+    <table align="center">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Subject</th>
+                <th>Body</th>
+            </tr>
+        </thead>
+        <tbody id="tab"></tbody>
+    </table>
+
+    <script>
+            document.addEventListener('DOMContentLoaded', async function () {
+                const response = await fetch('https://localhost:7057/api/notifications/GetUnsentNotifications');
+                const notifications = await response.json();
+                localStorage.setItem('notifications', JSON.stringify(notifications));
+
+                const updateTable = () => {
+                    $("#tab").empty();
+
+                    const savedNotifications = JSON.parse(localStorage.getItem('notifications'));
+
+                    savedNotifications.forEach(notification => {
+                        $("#tab").append(`
+                            <tr>
+                                <td>ID: ${notification.idnotification}</td>
+                                <td>Reciever: ${notification.receiver}</td>
+                                <td>Sender: ${notification.sender}</td>
+                                <td>Subject: ${notification.subject}</td>
+                                <td>Body: ${notification.body}</td>
+                            </tr>
+                        `);
+                    });
+                };
+                updateTable();
+                $.ajax({
+                    type: 'POST',
+                    url: 'https://localhost:7057/api/notifications/SendAllNotification',
+                    success: function () {
+                        console.log("Notifications successfully sent.");
+                    },
+                    error: function () {
+                        console.error("Something went wrong, couldn't send notifications.");
+                    }
+                });
+            }); 
+    </script>
+</body>
+</html>

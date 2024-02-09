@@ -1,0 +1,21 @@
+﻿@model IEnumerable<VMGenre>
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Idgenre)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new {  id=item.Idgenre }) |
+            @Html.ActionLink("Details", "Details", new {  id=item.Idgenre  }) |
+            @Html.ActionLink("Delete", "Delete", new {  id=item.Idgenre  })
+        </td>
+    </tr>
+}

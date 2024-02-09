@@ -1,0 +1,99 @@
+﻿@model IEnumerable<RWAMovies.ViewModels.VMVideo>
+
+@{
+    ViewData["Title"] = "PageVideos";
+    var page = (int)ViewBag.Page;
+    var size = (int)ViewBag.Size;
+    var orderBy = (string)ViewBag.OrderBy;
+    var direction = (string)ViewBag.Direction;
+    var pages = (int)ViewBag.Pages;
+    IEnumerable<VMGenre> genres = (IEnumerable<VMGenre>)ViewBag.Genres;
+}
+
+<h1>Videos</h1>
+<div id="pager" class="btn-group">
+    @for (var i = 0; i <= pages; i++)
+    {
+        var currClass = page == i ? "btn-primary" : "btn-outline-primary";
+        <a asp-action="Index"
+       asp-route-page="@i"
+       asp-route-size="@size"
+       asp-route-orderBy="@orderBy"
+       asp-route-direction="@direction"
+           data-page="@i"
+           class="pager-btn btn @currClass">@(i + 1)</a>
+    }
+</div>
+<partial name="_FilterPartial">
+    </>
+    <div class="container">
+        <div id="video-tab" class="row p-4 justify-content-around">
+            <partial name="_VideosTabPartial" />
+        </div>
+    </div>
+
+    @section Scripts {
+
+        <script>
+            const name = "name";
+            const genre = "genre";
+            const idVideo = "idVideo";
+
+            const fetchVideosPartial = "/UserView/VideosTabPartial";
+            const fetchSingleVideoPartial = "/UserView/VideoTabPartial";
+            const fetchAllVideosPartial = "/UserView/AllVideosTabPartial";
+            const fetchSearchedVideosPartial = "/UserView/SearchVideosTabPartial";
+            const videosJson = "/UserView/VideoJson";
+
+            const htmlVideoDisplayId = "#video-tab";
+            const allVideosFilterName = ".showAllItems";
+            const pagedVideosFilterName = ".showPagedItems";
+            const nameFilter = ".name.dropdown-menu";
+            const nameFilterItem = ".name.dropdown-menu a.dropdown-item";
+            const genreFilter = ".genre.dropdown-menu";
+            const genreFilterItem = ".genre.dropdown-menu a.dropdown-item";
+
+
+            paging(@size, fetchVideosPartial, htmlVideoDisplayId);
+            autocomplete(videosJson, fetchSingleVideoPartial, htmlVideoDisplayId, name, idVideo);
+            autocompleteDisplay("Search for video...");
+            searchFilter(@size, fetchSearchedVideosPartial, htmlVideoDisplayId);
+
+            showAllItemsFilter(allVideosFilterName, fetchAllVideosPartial, htmlVideoDisplayId);
+            showPagedItems(@size, pagedVideosFilterName, fetchVideosPartial, htmlVideoDisplayId);
+            defaultFilterItemsName("videos");
+
+            //************* <add filters arbitrarily> *********************************
+
+            addFilter(genre);
+            addFilter(name);
+
+            fillFilterItemsDefault(nameFilter);
+
+            @foreach (var genre in genres)
+            {
+                @:fillFilterItems(genreFilter, "@genre.Name");
+            }
+
+            //************* <filter functionality> *********************************
+            itemFilter(@size, genre, genreFilterItem, fetchVideosPartial, htmlVideoDisplayId);
+            itemFilter(@size, name, nameFilterItem, fetchVideosPartial, htmlVideoDisplayId);
+
+            removeAllFilters(@size, fetchVideosPartial, htmlVideoDisplayId);
+
+            //************* <filter animations> *********************************
+            // Use the show.bs.dropdown and hide.bs.dropdown events to trigger the animation
+            $('.dropdown').on('show.bs.dropdown', function (e) {
+                // Use the animate__animated and animate__fadeIn classes from animate.css
+                $('.dropdown-menu').addClass('animate__animated animate__fadeIn');
+            });
+            $('.dropdown').on('hide.bs.dropdown', function (e) {
+                // Use the animate__animated and animate__fadeOut classes from animate.css
+                $('.dropdown-menu').addClass('animate__animated animate__fadeOut');
+                // Remove the animation classes after the animation is done
+                setTimeout(function () {
+                    $('.dropdown-menu').removeClass('animate__animated animate__fadeIn animate__fadeOut');
+                }, 500);
+            });
+        </script>
+    }

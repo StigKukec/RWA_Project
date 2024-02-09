@@ -1,0 +1,37 @@
+﻿@model IEnumerable<RWAMovies.ViewModels.VMUser>
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Iduser)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Created)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Username)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Email)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Verified)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SecurityToken)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DeactivatedAt)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Deactivated)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new {  id=item.Iduser }) |
+            @Html.ActionLink("Details", "Details", new {  id=item.Iduser }) |
+            @Html.ActionLink("Delete", "Delete", new {  id=item.Iduser  }) |
+            @Html.ActionLink("Change password", "AdminChangePassword", new {  id = item.Iduser  })
+        </td>
+    </tr>
+}

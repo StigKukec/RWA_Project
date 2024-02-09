@@ -1,0 +1,20 @@
+﻿@model VMValidateEmail
+
+@{
+    ViewData["Title"] = "ValidateEmail";
+    var email = (string)ViewBag.Email;
+    var securityToken = (string)ViewBag.SecurityToken;
+}
+
+<div class="row text-center justify-content-center" >
+    <div class="col-md-4">
+        <form asp-action="ValidateEmail">
+            <input asp-for="Email" value="@email" type="hidden" class="form-control" />
+            <input asp-for="SecurityToken" value="@securityToken" type="hidden" class="form-control" />
+            <div class="form-group" style="align-self:center">
+                <h1>Email validation</h1>
+                <button class="btn btn-outline-success" id="btnVerifyEmail" type="submit" style="height: 80px; width: 200px">Verify Email</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,56 @@
+﻿@model IEnumerable<RWAMovies.ViewModels.VMCountry>
+
+@{
+    ViewData["Title"] = "Index";
+    var page = (int)ViewBag.Page;
+    var size = (int)ViewBag.Size;
+    var orderBy = (string)ViewBag.OrderBy;
+    var direction = (string)ViewBag.Direction;
+    var pages = (int)ViewBag.Pages;
+}
+
+<h1>Index</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Create New</a>
+</p>
+<div id="pager" class="btn-group">
+    @for (var i = 0; i <= pages; i++)
+    {
+        var currClass = page == i ? "btn-primary" : "btn-outline-primary";
+        <a asp-action="Index"
+       asp-route-page="@i"
+       asp-route-size="@size"
+       asp-route-orderBy="@orderBy"
+       asp-route-direction="@direction"
+           data-page="@i"
+           class="pager-btn btn @currClass">@(i + 1)</a>
+    }
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Idcountry)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="country-table-body">
+        <partial name="_CountryTableBodyPartial" />
+    </tbody>
+</table>
+@section Scripts {
+    <script>
+        var token = localStorage.getItem("jwt");
+
+        const fetchVideosPartial = "/CountryAdmin/CountryTablePartial";
+
+        const htmlVideoDisplayId = "#video-table-body";
+
+        paging(@size, fetchVideosPartial, htmlVideoDisplayId);
+    </script>
+    }

@@ -1,0 +1,143 @@
+﻿@using System.Security.Claims;
+@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor httpContextAccessor
+@{
+    string username = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+    string userType = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - RWAMovies</title>
+
+    @section Script{
+    /*
+    $.ajax({
+    type: 'GET',
+    url: "/UserView/Authorize",
+    /*
+    Headers: {
+    'Authorization': `Bearer ${token}`
+    },
+    */
+    success: function (data) {
+    console.log("Succesful authorization.");
+    },
+    error: function (data) {
+    console.error("Request authorization failed.");
+    window.location.href = "/UserView/LogIn";
+    }
+    });
+    */
+    }
+</head>
+<body>
+    <header>
+        <nav id="pageHeader" class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+
+            <div id="drugiDioHeader" class="container-fluid">
+                @{
+                    switch (userType)
+                    {
+                        case "Administrator":
+                            <a class="navbar-brand" asp-area="" asp-controller="VideoAdmin" asp-action="Index" target="_self" id="videos">Videos <img id="adminVideoIcon" class="img-fluid" style="height: 30px" src="~/Images/Video_icon.jpg" alt="video-icon"></a>
+                            <a class="navbar-brand" asp-area="" asp-controller="Userview" asp-action="UserProfile" target="_self" id="videos">Profile <img id="adminProfileIcon" class="img-fluid" style="height: 30px" src="~/Images/Profile_icon.jpg" alt="profile-icon"></a>
+                            <a class="navbar-brand" asp-area="" asp-controller="GenreAdmin" asp-action="Index" target="_self" id="genres">Genres <img id="adminGenreIcon" class="img-fluid" style="height: 30px" src="~/Images/Genre_icon.png" alt="genre-icon"></a>
+                            <a class="navbar-brand" asp-area="" asp-controller="TagAdmin" asp-action="Index" target="_self" id="tags">Tags <img id="adminTagIcon" class="img-fluid" style="height: 30px" src="~/Images/Tag_icon.jpg" alt="tag-icon"></a>
+                            <a class="navbar-brand" asp-area="" asp-controller="UserAdmin" asp-action="Index" target="_self" id="users">Users <img id="adminUserIcon" class="img-fluid" style="height: 30px" src="~/Images/Users_icon.jpg" alt="user-icon"></a>
+                            //<a class="navbar-brand" asp-area="" asp-controller="NotificationAdmin" asp-action="Index" id="notifications">Notifications <img id="adminNotificationIcon" class="img-fluid" style="height: 30px" src="~/Images/Notification_icon.png" alt="notification-icon"></a>
+                            <form id="logout" asp-controller="UserView" asp-action="LogOut" class="d-inline">
+                                <button type="submit" class="btn btn-outline-primary">Logout</button>
+                            </form>
+                            break;
+
+                        case "Member":
+                            <a class="navbar-brand" asp-area="" asp-controller="Userview" asp-action="PageVideos" target="_self" id="videos">Videos<img id="userVideoIcon" class="img-fluid" style="height: 30px" src="~/Images/Video_icon.jpg" alt="video-icon"></a>
+                            <a class="navbar-brand" asp-area="" asp-controller="Userview" asp-action="UserProfile" target="_self" id="videos">Profile <img id="userProfileIcon" class="img-fluid" style="height: 30px" src="~/Images/Profile_icon.jpg" alt="profile-icon"></a>
+                            <form id="logout" asp-controller="UserView" asp-action="LogOut" class="d-inline">
+                                <button type="submit" class="btn btn-outline-primary">Logout</button>
+                            </form>
+                            break;
+
+                        default:
+                            <a class="navbar-brand" asp-area="" asp-controller="UserView" asp-action="LogIn" target="_self" id="signIn">Sign in<img id="signInIcon" class="img-fluid" style="height: 30px" src="~/Images/SignIn_icon.png" alt="signIn-icon"></a>
+                            break;
+                    }
+                }
+            </div>
+
+            @{
+                if (username != null)
+                {
+                    <div id="drugiDioHeader" style="width: 18%" class="container-fluid ">
+                        <p id="signedInAs" class="navbar-brand" style="margin-bottom: 0px">Signed in as: @username</p>
+                    </div>
+                }
+                else
+                {
+                    <div id="drugiDioHeader" style="" class="container-fluid ">
+                        <marquee id="notSignedIn" class="navbar-brand" direction="right">You are not signed in.</marquee>
+                    </div>
+                }
+            }
+        </nav>
+        @*
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container-fluid">
+        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">RWAMovies</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+        <ul class="navbar-nav flex-grow-1">
+        <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </li>
+        </ul>
+        </div>
+        </div>
+        </nav>
+        *@
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2023 - RWAMovies @*- <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>*@
+        </div>
+    </footer>
+
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/RWAMovies.styles.css" asp-append-version="true" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="~/lib/jqueryui/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" href="~/lib/jqueryui/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" href="~/lib/jqueryui/themes/base/theme.css" />
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jqueryui/jquery-ui.min.js"></script>
+    <script src="~/js/Paging.js"></script>
+    <script src="~/js/AutocompleteFilter.js"></script>
+    <script src="~/js/DisplayOrAddFilters.js"></script>
+    <script src="~/js/ItemFilters.js"></script>
+    <script src="~/js/SelectItems.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,149 @@
+﻿@model IEnumerable<RWAMovies.ViewModels.VMUser>
+
+@{
+    ViewData["Title"] = "Index";
+    var page = (int)ViewBag.Page;
+    var size = (int)ViewBag.Size;
+    var orderBy = (string)ViewBag.OrderBy;
+    var direction = (string)ViewBag.Direction;
+    var pages = (int)ViewBag.Pages;
+    IEnumerable<VMCountry> countries = (IEnumerable<VMCountry>)ViewBag.Countries;
+}
+
+<h1>Index</h1>
+
+<p>
+    <form class="d-flex">
+        <button asp-action="Create" class="btn btn-outline-primary" type="submit">Create New</button>
+    </form>
+</p>
+<div id="pager" class="btn-group">
+    @for (var i = 0; i <= pages; i++)
+    {
+        var currClass = page == i ? "btn-primary" : "btn-outline-primary";
+        <a asp-action="Index"
+       asp-route-page="@i"
+       asp-route-size="@size"
+       asp-route-orderBy="@orderBy"
+       asp-route-direction="@direction"
+           data-page="@i"
+           class="pager-btn btn @currClass">@(i + 1)</a>
+    }
+</div>
+
+<partial name="_FilterPartial">
+    </>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Iduser)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Created)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Username)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Verified)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SecurityToken)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DeactivatedAt)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Deactivated)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="user-table-body">
+            <partial name="_UsersTableBodyPartial" />
+        </tbody>
+    </table>
+    @section Scripts {
+
+        <script>
+            var token = localStorage.getItem("jwt");
+            const firstname = "firstname";
+            const lastname = "lastname";
+            const username = "username";
+            const country = "country";
+            const idUser = "iduser";
+
+            const fetchUsersPartial = "/UserAdmin/UsersTableBodyPartial";
+            const fetchSingleUserPartial = "/UserAdmin/UserTableBodyPartial";
+            const fetchAllUsersPartial = "/UserAdmin/AllUsersTableBodyPartial";
+            const usersJson = "/UserView/UsersJson";
+
+            const htmlUsersDisplayId = "#user-table-body";
+            const allUsersFilterName = ".showAllItems";
+            const pagedUsersFilterName = ".showPagedItems";
+
+            const firstnameFilter = ".firstname.dropdown-menu";
+            const firstnameFilterItem = ".firstname.dropdown-menu a.dropdown-item";
+
+            const lastnameFilter = ".lastname.dropdown-menu";
+            const lastnameFilterItem = ".lastname.dropdown-menu a.dropdown-item";
+
+            const usernameFilter = ".username.dropdown-menu";
+            const usernameFilterItem = ".username.dropdown-menu a.dropdown-item";
+
+            const countryFilter = ".country.dropdown-menu";
+            const countryFilterItem = ".country.dropdown-menu a.dropdown-item";
+
+
+            paging(@size, fetchUsersPartial, htmlUsersDisplayId);
+            autocomplete(usersJson, fetchSingleUserPartial, htmlUsersDisplayId, username, idUser);
+            autocompleteDisplay("Search for user...");
+
+            showAllItemsFilter(allUsersFilterName, fetchAllUsersPartial, htmlUsersDisplayId);
+            showPagedItems(@size, pagedUsersFilterName, fetchUsersPartial, htmlUsersDisplayId);
+            defaultFilterItemsName("users");
+
+            //************* <add filters arbitrarily> *********************************
+
+            addFilter(country);
+            addFilter(username);
+            addFilter(lastname);
+            addFilter(firstname);
+
+            fillFilterItemsDefault(firstnameFilter);
+            fillFilterItemsDefault(lastnameFilter);
+            fillFilterItemsDefault(usernameFilter);
+
+            @foreach (var country in countries)
+            {
+                @:fillFilterItems(countryFilter, "@country.Name");
+            }
+
+                //************* <filter functionality> *********************************
+                itemFilter(@size, firstname, firstnameFilterItem, fetchUsersPartial, htmlUsersDisplayId);
+            itemFilter(@size, lastname, lastnameFilterItem, fetchUsersPartial, htmlUsersDisplayId);
+            itemFilter(@size, username, usernameFilterItem, fetchUsersPartial, htmlUsersDisplayId);
+            itemFilter(@size, country, countryFilterItem, fetchUsersPartial, htmlUsersDisplayId);
+
+            removeAllFilters(@size, fetchUsersPartial, htmlUsersDisplayId);
+
+            //************* <filter animations> *********************************
+            // Use the show.bs.dropdown and hide.bs.dropdown events to trigger the animation
+            $('.dropdown').on('show.bs.dropdown', function (e) {
+                // Use the animate__animated and animate__fadeIn classes from animate.css
+                $('.dropdown-menu').addClass('animate__animated animate__fadeIn');
+            });
+            $('.dropdown').on('hide.bs.dropdown', function (e) {
+                // Use the animate__animated and animate__fadeOut classes from animate.css
+                $('.dropdown-menu').addClass('animate__animated animate__fadeOut');
+                // Remove the animation classes after the animation is done
+                setTimeout(function () {
+                    $('.dropdown-menu').removeClass('animate__animated animate__fadeIn animate__fadeOut');
+                }, 500);
+            });
+        </script>
+    }

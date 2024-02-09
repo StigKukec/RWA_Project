@@ -1,0 +1,42 @@
+﻿@model IEnumerable<RWAMovies.ViewModels.VMTag>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Idtag)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Idtag)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id=item.Idtag }) |
+                    @Html.ActionLink("Details", "Details", new { id=item.Idtag }) |
+                    @Html.ActionLink("Delete", "Delete", new { id=item.Idtag })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
